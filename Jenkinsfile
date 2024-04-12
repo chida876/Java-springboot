@@ -49,18 +49,27 @@ pipeline {
         stage('Deploy to EKS') {
             parallel {
                 stage('Deploy to Dev') {
+                    when {
+                        branch 'dev'
+                    }
                     steps {
-                        sh 'kubectl apply -f dev-deployment.yaml'
+                        sh 'kubectl apply -f dev-deployment.yaml --namespace=${DEV_NAMESPACE}'
                     }
                 }
                 stage('Deploy to QA') {
+                    when {
+                        branch 'qa'
+                    }
                     steps {
-                        sh 'kubectl apply -f qa-deployment.yaml'
+                        sh 'kubectl apply -f qa-deployment.yaml --namespace=${QA_NAMESPACE}'
                     }
                 }
                 stage('Deploy to Production') {
+                    when {
+                        branch 'main'
+                    }
                     steps {
-                        sh 'kubectl apply -f prod-deployment.yaml'
+                        sh 'kubectl apply -f prod-deployment.yaml --namespace=${PROD_NAMESPACE}'
                     }
                 }
             }
@@ -80,3 +89,4 @@ pipeline {
         }
     }
 }
+
